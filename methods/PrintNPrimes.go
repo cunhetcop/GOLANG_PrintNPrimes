@@ -53,40 +53,24 @@ func getValidNumber() (n int, err error) {
 }
 
 func printNPrimes(n int) {
-	count := 0
 	primeChan := make(chan int)
+
 	go func() {
-		for i := 2; count < n; i++ {
+		for i := 2; ; i++ {
 			if isPrime(i) {
-				count++
-				go func(prime int) {
-					primeChan <- prime
-				}(i)
+				primeChan <- i
 			}
 		}
 	}()
 
-	
-	printChan := make(chan int)
 	go func() {
 		for i := 0; i < n; i++ {
-			prime := <-primeChan
-			printChan <- prime
-		}
-		close(primeChan)
-		close(printChan)
-	}()
-	
-	go func() {
-		for i := 1; i <= n; i++ {
-			prime := <-printChan
-			fmt.Printf("Số nguyên tố thứ #%d: %d\n", i, prime)
+			fmt.Printf("Số nguyên tố thứ #%d: %d\n", i+1, <-primeChan)
 		}
 	}()
-	
+
 	time.Sleep(100 * time.Millisecond)
 }
-
 
 func isPrime(n int) bool {
 	if n <= 1 {
